@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <cmath>
 using namespace std;
 
 namespace string_manipulation
@@ -323,6 +324,80 @@ namespace string_manipulation
         {
                 std::size_t found = aStr.find(bStr);
                 return (found != std::string::npos);
+        }
+
+        /* check if the given string is an integer */
+        /* not guarantee about overflowing */
+        /*  It's okay that any zero in the front part of the string */
+        bool if_string_is_posInt(std::string str)
+        {
+                // check the length
+                if (str.length() <= 0)
+                        return false;
+
+                // check if all char is digit
+                bool allCharDigit = true;
+                for (auto &c : str)
+                {
+                        if (!isdigit(c))
+                        {
+                                allCharDigit = false;
+                                break;
+                        }
+                }
+                if (!allCharDigit)
+                        return false;
+
+                // pass the checking
+                return true;
+        }
+
+        /* can be negative or positive */
+        bool if_string_is_int(std::string str)
+        {
+                if (str[0] == '-')
+                {
+                        string unsignStr(str.begin() + 1, str.end());
+                        return (string_manipulation::if_string_is_posInt(unsignStr));
+                }
+                return string_manipulation::if_string_is_posInt(str);
+        }
+
+        /* Turn a char into a decimal digit */
+        /* ++Warning++ please ensure it's actually an digit-char. */
+        int char_to_digit(char c)
+        {
+                return ((int)c - (int)'0');
+        }
+
+        /* turn string into integer */
+        /* please be sure that the string is actually an integer */
+        /* ( You may use function "if_string_is_int" to check ) */
+        /*  It's okay that any zero in the front part of the string */
+        /* ++Warning++ please be sure it won't overflow in int data type */
+        int string_to_int(std::string str)
+        {
+                int result = 0;
+                bool ifNeg = false;
+
+                //  if negative
+                if (str[0] == '-')
+                {
+                        string newStr(str.begin() + 1, str.end());
+                        str = newStr;
+                        ifNeg = true;
+                }
+
+                for (int i = str.length() - 1; i >= 0; i--)
+                {
+                        int digit = string_manipulation::char_to_digit(str[i]);
+                        result += (int)pow(10, str.length() - 1 - i) * digit;
+                }
+
+                if (ifNeg)
+                        return (result * (-1));
+                else
+                        return result;
         }
 
 } // namespace string_manipulation
