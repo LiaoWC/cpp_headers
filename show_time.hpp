@@ -1,7 +1,11 @@
 #ifndef _show_time_hpp_
 #define _show_time_hpp_
 
-#include "headers.hpp"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <ctime>
 
 char *get_time_cstr_newChar()
 {

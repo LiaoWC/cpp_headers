@@ -9,24 +9,27 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <string>
+#include "string_manipulation.hpp"
 using namespace std;
 
 class socket_programming
 {
 public:
-        static int bindOrConnect_socket(const char *host, const char *service, const char *transportation_type, int mode);
-        static int bind_socket(const char *host, const char *service, const char *transportation_type);
+        static int bindOrConnect_socket(const char *host, const char *service, const char *transportation_type, int mode, int ifEliminateAddressInUse);
+        //static int bindOrConnect_socket(const char *host, const char *service, const char *transportation_type, int mode);
+        static int bind_socket(const char *host, const char *service, const char *transportation_type, int ifEliminateAddressInUse);
         static int connect_socket(const char *host, const char *service, const char *transportation_type);
-        static int bind_socket_localhost(const char *service, const char *transportation_type);
+        static int bind_socket_localhost(const char *service, const char *transportation_type, int ifEliminateAddressInUse);
         static int socket_write(int sockfd, char *cstr, int length);
         static int socket_write(int sockfd, char singleChar);
         static int socket_write(int sockfd, const char *cstr, int length);
         static int socket_write(int sockfd, string str);
-
-}; // end of class: namespace socket_programming
+        static std::string socket_read_untilEndWord(int sockfd, char *readBuff, int buffSize, int max_read_loop, std::string end_string);
+}; // end of class: socket_programming
 
 /* mode 0 is to bind; 1 is to connect. */
-int socket_programming::bindOrConnect_socket(const char *host, const char *service, const char *transportation_type, int mode)
+/* ifEliminate... is an opt. If it == 1, it will setsockopt. */
+int socket_programming::bindOrConnect_socket(const char *host, const char *service, const char *transportation_type, int mode, int ifEliminateAddressInUse)
 {
         /* check for transportation_type */
         const char tcp[] = "tcp";
@@ -72,6 +75,18 @@ int socket_programming::bindOrConnect_socket(const char *host, const char *servi
 
                 if (mode == 0)
                 {
+
+                        /* Skip "Address already in use." */
+                        if (ifEliminateAddressInUse != 0)
+                        {
+                                int opt = 1;
+                                if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+                                {
+                                        perror("setsockopt");
+                                        exit(1);
+                                }
+                        }
+
                         if (bind(sockfd, i->ai_addr, i->ai_addrlen) == 0)
                                 break; // bind successfully
                 }
@@ -97,19 +112,19 @@ int socket_programming::bindOrConnect_socket(const char *host, const char *servi
         return sockfd;
 }
 
-int socket_programming::bind_socket(const char *host, const char *service, const char *transportation_type)
+int socket_programming::bind_socket(const char *host, const char *service, const char *transportation_type, int ifEliminateAddressInUse)
 {
-        return socket_programming::bindOrConnect_socket(host, service, transportation_type, 0);
+        return socket_programming::bindOrConnect_socket(host, service, transportation_type, 0, 0);
 }
 
 int socket_programming::connect_socket(const char *host, const char *service, const char *transportation_type)
 {
-        return socket_programming::bindOrConnect_socket(host, service, transportation_type, 1);
+        return socket_programming::bindOrConnect_socket(host, service, transportation_type, 1, 0);
 }
 
-int socket_programming::bind_socket_localhost(const char *service, const char *transportation_type)
+int socket_programming::bind_socket_localhost(const char *service, const char *transportation_type, int ifEliminateAddressInUse)
 {
-        return socket_programming::bind_socket("0.0.0.0", service, transportation_type);
+        return socket_programming::bind_socket("0.0.0.0", service, transportation_type, ifEliminateAddressInUse);
 }
 
 /* return how many bytes written; -1 for error */
@@ -168,6 +183,39 @@ int socket_write(int sockfd, string str)
         int rt = socket_programming::socket_write(sockfd, ptr, str.size() + 1);
         delete[] ptr;
         return rt;
+}
+
+std::string socket_read_untilEndWord(int sockfd, char *readBuff, int buffSize, int max_read_loop, std::string end_string)
+{
+        /* Read until the specific ending word. */
+        string readUntilNow;
+        std::size_t found_pos;
+        int i = 0;
+        for (; i < max_read_loop; i++)
+        {
+                char readBuff[buffSize];
+                bzero(readBuff, buffSize);
+                if (read(sockfd, readBuff, buffSize) < 0)
+                {
+                        fprintf(stderr, "Read Error: %s\a\n", strerror(errno));
+                        return string("Read Error");
+                }
+                readUntilNow += string(readBuff);
+                found_pos = readUntilNow.find(string(end_string));
+                if (found_pos != std::string::npos)
+                {
+                        int lengthOfEndReadString = (string(end_string)).size();
+                        readUntilNow.erase(readUntilNow.begin() + found_pos, readUntilNow.begin() + found_pos + lengthOfEndReadString);
+                        readUntilNow = string_manipulation::string_rm_front_behind_space(readUntilNow);
+                        break;
+                }
+        }
+        if (i == max_read_loop)
+        {
+                /* it may be forever loop */
+                fprintf(stderr, "ERROR: cannot find the end string of the messeage after the max read loop.\a\n");
+        }
+        return readUntilNow;
 }
 
 /* ======= simple client sample =======

@@ -1,7 +1,7 @@
 #ifndef _sqliteCallback_hpp
 #define _sqliteCallback_hpp
 
-#include "headers.hpp"
+#include<sqlite3.h>
 
 
 static int checkRepeatedCallback(void *data, int argc, char **argv, char **colName)

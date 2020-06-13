@@ -320,7 +320,7 @@ namespace string_manipulation
         }
 
         /* find bStr in aStr  */
-        bool if_oneStrIngTheOtherStr(std::string aStr, std::string bStr)
+        bool if_oneStrInTheOtherStr(std::string aStr, std::string bStr)
         {
                 std::size_t found = aStr.find(bStr);
                 return (found != std::string::npos);

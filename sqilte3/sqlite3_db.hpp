@@ -8,7 +8,6 @@
 #include <cstdlib>
 #include <cstring>
 #include "sqliteCallback.hpp"
-#define dbPath "/home/smallfish/networkProgramming/Project/nphw3_build/bbsServerDatabase.db"
 //#define sqlSize 999
 #define ifPrintSql true
 using namespace std;
@@ -39,10 +38,10 @@ bool sqlite3_if_repeat(sqlite3 *db, string sqlStr)
         return (count > 0) ? true : false;
 }
 
-sqlite3 *sqlite3_openDB()
+sqlite3 *sqlite3_openDB(const char* db_path)
 {
         sqlite3 *db;
-        if (sqlite3_open(dbPath, &db))
+        if (sqlite3_open(db_path, &db))
         {
                 fprintf(stderr, "Opening-database error: %s\a\n", sqlite3_errmsg(db));
                 exit(1);
@@ -55,7 +54,6 @@ void sqlite3_insert(sqlite3 *db, string sqlStr)
         char *sql = new char[(unsigned)sqlStr.size() + 1]; // store the sqlite3 cmd
         strcpy(sql, sqlStr.c_str());
         char *errMsg = NULL;
-        sqlite3_stmt *stmt;
 
         if (ifPrintSql) // use "ifPrintSql" button to decide whether print sql info on the server's screen
                 std::cout << sql << std::endl;
