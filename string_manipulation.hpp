@@ -99,34 +99,34 @@ namespace string_manipulation
                 return string_cut_in_half(str);
         }
 
-        /* 將 string 全部依空格切開，每個新字串頭尾不會有空格 */
-        std::vector<std::string> string_split_by_space(std::string str)
-        {
-                std::vector<std::string> rt;
-                std::string temp;
-                for (int i = 0; (unsigned)i < str.length(); i++)
-                {
-                        if (str[i] == ' ')
-                        {
-                                if ((unsigned)temp.length() > 0)
-                                {
-                                        rt.emplace_back(temp);
-                                        temp.clear();
-                                }
-                                continue;
-                        }
-                        temp += str[i];
-                }
-                if ((unsigned)temp.length() > 0)
-                        rt.emplace_back(temp);
-                return rt;
-        }
-        /* 將 c_string 全部依空格切開，每個新字串頭尾不會有空格 */
-        std::vector<std::string> cstring_split_by_space(char cstr[])
-        {
-                std::string str(cstr);
-                return string_split_by_space(str);
-        }
+//        /* 將 string 全部依空格切開，每個新字串頭尾不會有空格 */
+//        std::vector<std::string> string_split_by_space(std::string str)
+//        {
+//                std::vector<std::string> rt;
+//                std::string temp;
+//                for (int i = 0; (unsigned)i < str.length(); i++)
+//                {
+//                        if (str[i] == ' ')
+//                        {
+//                                if ((unsigned)temp.length() > 0)
+//                                {
+//                                        rt.emplace_back(temp);
+//                                        temp.clear();
+//                                }
+//                                continue;
+//                        }
+//                        temp += str[i];
+//                }
+//                if ((unsigned)temp.length() > 0)
+//                        rt.emplace_back(temp);
+//                return rt;
+//        }
+//        /* 將 c_string 全部依空格切開，每個新字串頭尾不會有空格 */
+//        std::vector<std::string> cstring_split_by_space(char cstr[])
+//        {
+//                std::string str(cstr);
+//                return string_split_by_space(str);
+//        }
 
         /* 偵側輸入字串是否全空或全為空白、\n、\r */
         bool string_if_empty_or_allSpaceAndOther(std::string str)
@@ -225,38 +225,38 @@ namespace string_manipulation
                 return ptr;
         }
 
-        /* 移除std::string後面的空格 */
-        std::string string_rm_behind_space(std::string str)
-        {
-                std::string tempContainer;
-                std::reverse(str.begin(), str.end());
-                bool ifHaveSeenNotSpaceOrOther = false;
-                for (unsigned int i = 0; i < (unsigned)str.length(); i++)
-                {
-                        if (ifHaveSeenNotSpaceOrOther == false)
-                        {
-                                if (!(str[i] == ' ' /*||tr[i] == '\n' || str[i] == '\r'*/))
-                                {
-                                        ifHaveSeenNotSpaceOrOther = true;
-                                        tempContainer += str[i];
-                                }
-                        }
-                        else
-                                tempContainer += str[i];
-                }
-                std::reverse(tempContainer.begin(), tempContainer.end());
-                return tempContainer;
-        }
-
-        /* 移除std::string前後的空格 */
-        std::string string_rm_front_behind_space(std::string str)
-        {
-                str = string_rm_behind_space(str);
-                std::reverse(str.begin(), str.end());
-                str = string_rm_behind_space(str);
-                std::reverse(str.begin(), str.end());
-                return str;
-        }
+//        /* 移除std::string後面的空格 */
+//        std::string string_rm_behind_space(std::string str)
+//        {
+//                std::string tempContainer;
+//                std::reverse(str.begin(), str.end());
+//                bool ifHaveSeenNotSpaceOrOther = false;
+//                for (unsigned int i = 0; i < (unsigned)str.length(); i++)
+//                {
+//                        if (ifHaveSeenNotSpaceOrOther == false)
+//                        {
+//                                if (!(str[i] == ' ' /*||tr[i] == '\n' || str[i] == '\r'*/))
+//                                {
+//                                        ifHaveSeenNotSpaceOrOther = true;
+//                                        tempContainer += str[i];
+//                                }
+//                        }
+//                        else
+//                                tempContainer += str[i];
+//                }
+//                std::reverse(tempContainer.begin(), tempContainer.end());
+//                return tempContainer;
+//        }
+//
+//        /* 移除std::string前後的空格 */
+//        std::string string_rm_front_behind_space(std::string str)
+//        {
+//                str = string_rm_behind_space(str);
+//                std::reverse(str.begin(), str.end());
+//                str = string_rm_behind_space(str);
+//                std::reverse(str.begin(), str.end());
+//                return str;
+//        }
 
         /* 依指定的詞切開std::string */
         std::vector<std::string> string_cut_by_word(std::string str, std::string word)
